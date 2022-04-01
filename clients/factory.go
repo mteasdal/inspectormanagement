@@ -41,6 +41,8 @@ type ReturnedCredentials struct {
 	AssumedRole       string
 }
 
+const userAccount = "083917714948"
+
 // SetDefaultConfig loads up the credentials from the .aws folder
 func (u *UserCredentials) SetDefaultConfig() {
 	u.UserConfig, _ = config.LoadDefaultConfig(u.UserContext,
@@ -48,12 +50,13 @@ func (u *UserCredentials) SetDefaultConfig() {
 }
 
 func (u *UserCredentials) SetRole(targetAccount string) {
-	roleToAssume := fmt.Sprintf("arn:aws:iam::%s:role/hrk-role-inspector-readonly", targetAccount)
+	roleToAssume := fmt.Sprintf("arn:aws:iam::%s:role/hrk-role-inspector-reporter", targetAccount)
 	u.ServiceCredentials.AssumedRole = roleToAssume
 }
 
 func (u *UserCredentials) GetSerialNumber() *string {
-	serialNumber := fmt.Sprintf("arn:aws:iam::%s:mfa/%s", u.AwsAccount, u.UserName)
+	serialNumber := fmt.Sprintf("arn:aws:iam::%s:mfa/%s", userAccount, u.UserName)
+	fmt.Printf("***DEBUG*** %s", serialNumber)
 	return &serialNumber
 }
 

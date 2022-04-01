@@ -34,7 +34,7 @@ func GetAWSSessionToken(userCredentials *clients.UserCredentials, stsClient *sts
 		DurationSeconds: &userCredentials.SessionDuration,
 		SerialNumber:    userCredentials.GetSerialNumber(),
 	}, func(options *sts.Options) {
-		options.Region = "eu-west-1"
+		options.Region = userCredentials.Region
 	})
 
 	if err != nil {

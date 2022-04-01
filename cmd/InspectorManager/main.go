@@ -73,5 +73,5 @@ func main() {
 		auditing.Log(filterPipeline.FilterError.Error())
 	}
 
-	fmt.Printf("Filter Output %s", filterPipeline.FilterResponse.Arn)
+	fmt.Printf("Filter Output %s", *filterPipeline.FilterResponse.Arn)
 }
