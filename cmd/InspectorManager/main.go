@@ -1,6 +1,7 @@
 package main
 
 import (
+	"InspectorManager/auditing"
 	"InspectorManager/clients"
 	"InspectorManager/inspector"
 	"InspectorManager/security"
@@ -44,11 +45,17 @@ func main() {
 	err := security.GetAWSSessionToken(logonCredentials, stsClient)
 
 	if err != nil {
+		auditing.Log(err.Error())
 		os.Exit(1)
 	}
 
 	stsServiceFactory := clients.NewSTSClientSessionConfig()
 	err = security.AssumeAccountRole(logonCredentials, stsServiceFactory, logonCredentials.AwsAccount)
+
+	if err != nil {
+		auditing.Log(err.Error())
+		os.Exit(1)
+	}
 
 	inspectorFactory := clients.NewInspectorClientFactory()
 	inspectorClient := inspectorFactory(logonCredentials.UserConfig, *logonCredentials)
@@ -63,6 +70,7 @@ func main() {
 
 	if filterPipeline.FilterError != nil {
 		fmt.Printf("Error processing pipeline %s", filterPipeline.FilterError.Error())
+		auditing.Log(filterPipeline.FilterError.Error())
 	}
 
 	fmt.Printf("Filter Output %s", filterPipeline.FilterResponse.Arn)

@@ -80,6 +80,7 @@ func (i *InspectorFilterPipeline) CreateFilterRequest() *InspectorFilterPipeline
 func (i *InspectorFilterPipeline) ProcessFilterRequest(client *inspector2.Client,
 	ctx context.Context) *InspectorFilterPipeline {
 	fmt.Printf("Processing Filter Request")
+
 	response, err := client.CreateFilter(ctx, i.FilterRequest)
 	if err != nil {
 		i.FilterError = err
