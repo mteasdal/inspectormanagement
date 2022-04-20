@@ -18,6 +18,7 @@ type UserCredentials struct {
 	Region               string
 	Profile              string
 	FilterName           string
+	FilterType           string
 	UserContext          context.Context
 	UserConfig           aws.Config
 	SessionName          string
@@ -56,7 +57,6 @@ func (u *UserCredentials) SetRole(targetAccount string) {
 
 func (u *UserCredentials) GetSerialNumber() *string {
 	serialNumber := fmt.Sprintf("arn:aws:iam::%s:mfa/%s", userAccount, u.UserName)
-	fmt.Printf("***DEBUG*** %s", serialNumber)
 	return &serialNumber
 }
 

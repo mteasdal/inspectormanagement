@@ -17,8 +17,9 @@ func main() {
 	userName := flag.String("username", "", "Aws username")
 	region := flag.String("region", "eu-west-1", "Default aws region")
 	profile := flag.String("profile", "", "Profile for the aws account")
-	action := flag.String("action", "NONE", "Filter action")
+	action := flag.String("action", "SUPPRESS", "Filter action")
 	filterName := flag.String("filter-name", "test", "name of filter")
+	filterType := flag.String("filter-type", "cve", "type of filter cve or account")
 	mfaToken := flag.String("mfa", "", "MFA Token")
 
 	flag.Parse()
@@ -30,6 +31,7 @@ func main() {
 		Region:          *region,
 		Profile:         *profile,
 		FilterName:      *filterName,
+		FilterType:      *filterType,
 		UserContext:     context.TODO(),
 		SessionDuration: 3600,
 		SessionName:     "inspector",
@@ -64,9 +66,14 @@ func main() {
 		AWSAccounts: []string{logonCredentials.AwsAccount},
 		Action:      types.FilterAction(*action),
 		FilterName:  logonCredentials.FilterName,
+		CVETitles:   []string{"CVE-2021-3711"},
 	}
 
-	filterPipeline.PopulateAccountFilters("EQUALS").CreateFilterRequest().ProcessFilterRequest(inspectorClient, logonCredentials.UserContext)
+	if logonCredentials.FilterType == "cve" {
+		filterPipeline.PopulateTitleFilters("EQUALS").CreateVulnerabilityIdFilterRequest().ProcessFilterRequest(inspectorClient, logonCredentials.UserContext)
+	} else {
+		filterPipeline.PopulateAccountFilters("EQUALS").CreateAccountFilterRequest().ProcessFilterRequest(inspectorClient, logonCredentials.UserContext)
+	}
 
 	if filterPipeline.FilterError != nil {
 		fmt.Printf("Error processing pipeline %s", filterPipeline.FilterError.Error())

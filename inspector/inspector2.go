@@ -63,13 +63,26 @@ func (i *InspectorFilterPipeline) PopulateTitleFilters(comparisonOperator string
 	return i
 }
 
-// CreateFilterRequest adds the filters to Inspector
-func (i *InspectorFilterPipeline) CreateFilterRequest() *InspectorFilterPipeline {
+// CreateAccountFilterRequest adds the filters to Inspector
+func (i *InspectorFilterPipeline) CreateAccountFilterRequest() *InspectorFilterPipeline {
 	filterRequest := inspector2.CreateFilterInput{}
 	filterRequest.Action = i.Action
 	filterRequest.Name = &i.FilterName
 	if len(i.AccountFilters) > 0 {
 		f := types.FilterCriteria{AwsAccountId: i.AccountFilters}
+		filterRequest.FilterCriteria = &f
+	}
+	i.FilterRequest = &filterRequest
+	return i
+}
+
+// CreateVulnerabilityIdFilterRequest adds the filters to Inspector
+func (i *InspectorFilterPipeline) CreateVulnerabilityIdFilterRequest() *InspectorFilterPipeline {
+	filterRequest := inspector2.CreateFilterInput{}
+	filterRequest.Action = i.Action
+	filterRequest.Name = &i.FilterName
+	if len(i.CVETitles) > 0 {
+		f := types.FilterCriteria{VulnerabilityId: i.CVETitleFilters}
 		filterRequest.FilterCriteria = &f
 	}
 	i.FilterRequest = &filterRequest

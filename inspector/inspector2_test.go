@@ -30,7 +30,7 @@ func TestInspectorFilterPipeline_CreateFilterRequest(t *testing.T) {
 		AWSAccounts: []string{"12345348035"},
 	}
 
-	filterPipeline.Action = types.FilterAction("NONE")
+	filterPipeline.Action = types.FilterAction("SUPPRESS")
 
 	filterPipeline.PopulateAccountFilters("EQUALS")
 	filterPipeline.CreateFilterRequest()
