@@ -18,23 +18,25 @@ func main() {
 	region := flag.String("region", "eu-west-1", "Default aws region")
 	profile := flag.String("profile", "", "Profile for the aws account")
 	action := flag.String("action", "SUPPRESS", "Filter action")
-	filterName := flag.String("filter-name", "test", "name of filter")
+	filterName := flag.String("filter-name", "computed", "name of filter")
 	filterType := flag.String("filter-type", "cve", "type of filter cve or account")
+	comparisonOperator := flag.String("operator", "EQUALS", "Comparison operator EQUALS, PREFIX, NOT_EQUALS")
 	mfaToken := flag.String("mfa", "", "MFA Token")
 
 	flag.Parse()
 
 	logonCredentials := &clients.UserCredentials{
-		AwsAccount:      *awsAccount,
-		UserName:        *userName,
-		MFAToken:        *mfaToken,
-		Region:          *region,
-		Profile:         *profile,
-		FilterName:      *filterName,
-		FilterType:      *filterType,
-		UserContext:     context.TODO(),
-		SessionDuration: 3600,
-		SessionName:     "inspector",
+		AwsAccount:         *awsAccount,
+		UserName:           *userName,
+		MFAToken:           *mfaToken,
+		Region:             *region,
+		Profile:            *profile,
+		ComparisonOperator: *comparisonOperator,
+		FilterName:         *filterName,
+		FilterType:         *filterType,
+		UserContext:        context.TODO(),
+		SessionDuration:    3600,
+		SessionName:        "inspector",
 	}
 
 	//Sets the default config
@@ -70,9 +72,9 @@ func main() {
 	}
 
 	if logonCredentials.FilterType == "cve" {
-		filterPipeline.PopulateTitleFilters("EQUALS").CreateVulnerabilityIdFilterRequest().ProcessFilterRequest(inspectorClient, logonCredentials.UserContext)
+		filterPipeline.PopulateTitleFilters(logonCredentials.ComparisonOperator).CreateVulnerabilityIdFilterRequest().ProcessFilterRequest(inspectorClient, logonCredentials.UserContext)
 	} else {
-		filterPipeline.PopulateAccountFilters("EQUALS").CreateAccountFilterRequest().ProcessFilterRequest(inspectorClient, logonCredentials.UserContext)
+		filterPipeline.PopulateAccountFilters(logonCredentials.ComparisonOperator).CreateAccountFilterRequest().ProcessFilterRequest(inspectorClient, logonCredentials.UserContext)
 	}
 
 	if filterPipeline.FilterError != nil {

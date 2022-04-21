@@ -19,6 +19,7 @@ type UserCredentials struct {
 	Profile              string
 	FilterName           string
 	FilterType           string
+	ComparisonOperator   string
 	UserContext          context.Context
 	UserConfig           aws.Config
 	SessionName          string
